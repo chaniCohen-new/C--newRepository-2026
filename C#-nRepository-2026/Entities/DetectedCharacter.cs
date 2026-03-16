@@ -1,17 +1,17 @@
 ﻿using System;
-using static System.Net.Mime.MediaTypeNames;
+using System.Collections.Generic;
+// אל תוסיפי כאן using c__nRepository_2026...
 
-namespace C__repository_2026.Entities
+namespace c__nRepository_2026.Entities
 {
     public class DetectedCharacter
     {
         public int Id { get; set; }
         public int ImageId { get; set; }
         public int CharacterId { get; set; }
-        public float Confidence { get; set; } // ערך בין 0 ל-1 לדיוק הזיהוי
+        public float Confidence { get; set; }
         public DateTime DetectionDate { get; set; }
 
-        // Foreign Keys
         public virtual Image Image { get; set; }
         public virtual Character Character { get; set; }
     }

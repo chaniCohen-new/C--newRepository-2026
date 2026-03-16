@@ -1,19 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using c__nRepository_2026.Entities;
 using Microsoft.EntityFrameworkCore;
-using C__repository_2026.Entities;
+using System.Threading;
+using System.Threading.Tasks;
 
-namespace C__repository_2026.Interfaces
+namespace c__nRepository_2026.Interfaces
 {
     public interface IContext
     {
-        DbSet<Gallery> Galleries { get; set; }
-        DbSet<Image> Images { get; set; }
         DbSet<Character> Characters { get; set; }
         DbSet<DetectedCharacter> DetectedCharacters { get; set; }
-        public void Save();
+        DbSet<Gallery> Galleries { get; set; }
+        DbSet<Image> Images { get; set; }
+
+        int SaveChanges();
+        Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     }
 }

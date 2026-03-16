@@ -1,16 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+// אל תוסיפי כאן using c__nRepository_2026...
 
-namespace C__repository_2026.Entities
+namespace c__nRepository_2026.Entities
 {
     public class Character
     {
         public int Id { get; set; }
-        public string CharacterName { get; set; }
-        public string Description { get; set; }
+        public string CharacterName { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
         public DateTime CreatedDate { get; set; }
-
-        // Relationship
-        public virtual ICollection<DetectedCharacter> DetectedCharacters { get; set; }
+        public virtual ICollection<DetectedCharacter> DetectedCharacters { get; set; } = new List<DetectedCharacter>();
     }
 }
