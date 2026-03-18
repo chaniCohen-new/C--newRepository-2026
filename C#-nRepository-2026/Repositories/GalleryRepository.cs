@@ -1,23 +1,22 @@
-﻿using c__nRepository_2026.Interfaces;
+﻿////C#-nRepository-2026/Repositories/GalleryRepository.cs
+
+using c__nRepository_2026.Interfaces;
 using c__nRepository_2026.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 
 namespace c__nRepository_2026.Repositories
 {
     public class GalleryRepository : IRepository<Gallery>
     {
-        private readonly IContext context;
-        public GalleryRepository(IContext context) { this.context = context; }
+        private readonly IContext _context;
+
+        public GalleryRepository(IContext context) { _context = context; }
 
         public async Task<Gallery> AddItemAsync(Gallery item)
         {
             item.CreatedDate = DateTime.Now;
-            await context.Galleries.AddAsync(item);
-            await context.SaveChangesAsync();
+            await _context.Galleries.AddAsync(item);
+            await _context.SaveChangesAsync();
             return item;
         }
 
@@ -26,48 +25,39 @@ namespace c__nRepository_2026.Repositories
             var gallery = await GetByIdAsync(id);
             if (gallery != null)
             {
-                context.Galleries.Remove(gallery);
-                await context.SaveChangesAsync();
+                _context.Galleries.Remove(gallery);
+                await _context.SaveChangesAsync();
             }
         }
 
-        public async Task<Gallery> GetByIdAsync(int id)
+        public async Task<Gallery?> GetByIdAsync(int id)
         {
-            return await context.Galleries.FirstOrDefaultAsync(g => g.Id == id);
+            return await _context.Galleries
+                .AsNoTracking()
+                .Include(g => g.Images) // טעינת התמונות בתוך הגלריה
+                .FirstOrDefaultAsync(g => g.Id == id);
         }
 
         public async Task<List<Gallery>> GetAllAsync()
         {
-            return await context.Galleries.OrderByDescending(g => g.CreatedDate).ToListAsync();
+            return await _context.Galleries
+                .AsNoTracking()
+                .OrderByDescending(g => g.CreatedDate)
+                .ToListAsync();
         }
 
         public async Task UpdateItemAsync(int id, Gallery item)
         {
-            var gallery = await GetByIdAsync(id);
-            if (gallery != null)
-            {
-                gallery.Name = item.Name;
-                gallery.CharacterId = item.CharacterId;
-                context.Galleries.Update(gallery);
-                await context.SaveChangesAsync();
-            }
+            _context.Galleries.Update(item);
+            await _context.SaveChangesAsync();
         }
 
-        // פונקציות ייחודיות למחלקה זו - גם הן הפכו לא-סינכרוניות
         public async Task<List<Gallery>> GetGalleriesByUserIdAsync(int userId)
         {
-            return await context.Galleries.Where(g => g.UserId == userId).OrderByDescending(g => g.CreatedDate).ToListAsync();
-        }
-
-        public async Task<List<Gallery>> GetGalleriesByCharacterIdAsync(int characterId)
-        {
-            return await context.Galleries.Where(g => g.CharacterId == characterId).ToListAsync();
-        }
-
-        public async Task<Gallery> GetGalleryWithImagesAsync(int galleryId)
-        {
-            // שימי לב: הוספתי פה Include כדי שבאמת יביא את התמונות יחד עם הגלריה!
-            return await context.Galleries.Include(g => g.Images).FirstOrDefaultAsync(g => g.Id == galleryId);
+            return await _context.Galleries
+                .AsNoTracking()
+                .Where(g => g.UserId == userId)
+                .ToListAsync();
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿//C#-nRepository-2026/Entities/DetectedCharacter.cs
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 

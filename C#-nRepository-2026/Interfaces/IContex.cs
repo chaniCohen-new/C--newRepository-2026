@@ -1,7 +1,6 @@
-﻿using c__nRepository_2026.Entities;
+﻿//C#-nRepository-2026/Interfaces/IContext.cs
+using c__nRepository_2026.Entities;
 using Microsoft.EntityFrameworkCore;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace c__nRepository_2026.Interfaces
 {
@@ -11,6 +10,7 @@ namespace c__nRepository_2026.Interfaces
         DbSet<DetectedCharacter> DetectedCharacters { get; set; }
         DbSet<Gallery> Galleries { get; set; }
         DbSet<Image> Images { get; set; }
+        DbSet<User> Users { get; set; } // הוספנו את המשתמשים!
 
         int SaveChanges();
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);

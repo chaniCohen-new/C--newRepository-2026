@@ -1,25 +1,22 @@
-﻿using c__nRepository_2026.Interfaces;
+﻿//C#-nRepository-2026/Repositories/DetectedCharacterRepository.cs
+
+using c__nRepository_2026.Interfaces;
 using c__nRepository_2026.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 
 namespace c__nRepository_2026.Repositories
 {
     public class DetectedCharacterRepository : IRepository<DetectedCharacter>
     {
-        private readonly IContext context;
+        private readonly IContext _context;
 
-        // הזרקת תלויות של ה-IContext
-        public DetectedCharacterRepository(IContext context) { this.context = context; }
+        public DetectedCharacterRepository(IContext context) { _context = context; }
 
         public async Task<DetectedCharacter> AddItemAsync(DetectedCharacter item)
         {
             item.DetectionDate = DateTime.Now;
-            await context.DetectedCharacters.AddAsync(item);
-            await context.SaveChangesAsync();
+            await _context.DetectedCharacters.AddAsync(item);
+            await _context.SaveChangesAsync();
             return item;
         }
 
@@ -28,42 +25,40 @@ namespace c__nRepository_2026.Repositories
             var detection = await GetByIdAsync(id);
             if (detection != null)
             {
-                context.DetectedCharacters.Remove(detection);
-                await context.SaveChangesAsync();
+                _context.DetectedCharacters.Remove(detection);
+                await _context.SaveChangesAsync();
             }
         }
 
-        public async Task<DetectedCharacter> GetByIdAsync(int id)
+        public async Task<DetectedCharacter?> GetByIdAsync(int id)
         {
-            return await context.DetectedCharacters.FirstOrDefaultAsync(dc => dc.Id == id);
+            return await _context.DetectedCharacters
+                .AsNoTracking()
+                .FirstOrDefaultAsync(dc => dc.Id == id);
         }
 
         public async Task<List<DetectedCharacter>> GetAllAsync()
         {
-            return await context.DetectedCharacters.OrderByDescending(dc => dc.DetectionDate).ToListAsync();
+            return await _context.DetectedCharacters
+                .AsNoTracking()
+                .OrderByDescending(dc => dc.DetectionDate)
+                .ToListAsync();
         }
 
         public async Task UpdateItemAsync(int id, DetectedCharacter item)
         {
-            var detection = await GetByIdAsync(id);
-            if (detection != null)
-            {
-                detection.Confidence = item.Confidence;
-                context.DetectedCharacters.Update(detection);
-                await context.SaveChangesAsync();
-            }
+            _context.DetectedCharacters.Update(item);
+            await _context.SaveChangesAsync();
         }
 
-        // --- פונקציות ייחודיות למחלקה זו ---
-
+        // פונקציות ייחודיות - שליפה לפי תמונה או דמות
         public async Task<List<DetectedCharacter>> GetDetectionsByImageIdAsync(int imageId)
         {
-            return await context.DetectedCharacters.Where(dc => dc.ImageId == imageId).OrderByDescending(dc => dc.Confidence).ToListAsync();
-        }
-
-        public async Task<List<DetectedCharacter>> GetDetectionsByCharacterIdAsync(int characterId)
-        {
-            return await context.DetectedCharacters.Where(dc => dc.CharacterId == characterId).OrderByDescending(dc => dc.DetectionDate).ToListAsync();
+            return await _context.DetectedCharacters
+                .AsNoTracking()
+                .Where(dc => dc.ImageId == imageId)
+                .Include(dc => dc.Character) // מביא גם את פרטי הדמות
+                .ToListAsync();
         }
     }
 }

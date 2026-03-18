@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿//C#-nRepository-2026/Entities/Image.cs
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 

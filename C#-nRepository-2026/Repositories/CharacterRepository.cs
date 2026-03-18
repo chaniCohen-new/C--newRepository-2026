@@ -1,20 +1,19 @@
-﻿using c__nRepository_2026.Interfaces;
+﻿//C#-nRepository-2026/Repositories/CharacterRepository.cs
+using c__nRepository_2026.Interfaces;
 using c__nRepository_2026.Entities;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 
 namespace c__nRepository_2026.Repositories
 {
     public class CharacterRepository : IRepository<Character>
     {
-        private readonly IContext context;
-        public CharacterRepository(IContext context) { this.context = context; }
+        private readonly IContext _context;
+        public CharacterRepository(IContext context) { _context = context; }
 
         public async Task<Character> AddItemAsync(Character item)
         {
-            await context.Characters.AddAsync(item);
-            await context.SaveChangesAsync();
+            await _context.Characters.AddAsync(item);
+            await _context.SaveChangesAsync();
             return item;
         }
 
@@ -23,33 +22,29 @@ namespace c__nRepository_2026.Repositories
             var character = await GetByIdAsync(id);
             if (character != null)
             {
-                context.Characters.Remove(character);
-                await context.SaveChangesAsync();
+                _context.Characters.Remove(character);
+                await _context.SaveChangesAsync();
             }
         }
 
-        public async Task<Character> GetByIdAsync(int id)
+        public async Task<Character?> GetByIdAsync(int id)
         {
-            // שימוש ב-FirstOrDefaultAsync במקום FirstOrDefault הרגיל
-            return await context.Characters.FirstOrDefaultAsync(c => c.Id == id);
+            // שימוש ב-AsNoTracking משפר ביצועים בשליפות לקריאה בלבד
+            return await _context.Characters
+                .AsNoTracking()
+                .FirstOrDefaultAsync(c => c.Id == id);
         }
 
         public async Task<List<Character>> GetAllAsync()
         {
-            // שימוש ב-ToListAsync
-            return await context.Characters.ToListAsync();
+            return await _context.Characters.AsNoTracking().ToListAsync();
         }
 
         public async Task UpdateItemAsync(int id, Character item)
         {
-            var character = await GetByIdAsync(id);
-            if (character != null)
-            {
-                character.CharacterName = item.CharacterName;
-                character.Description = item.Description;
-                context.Characters.Update(character);
-                await context.SaveChangesAsync();
-            }
+            // הדרך הנכונה לעדכן ב-Entity Framework:
+            _context.Characters.Update(item);
+            await _context.SaveChangesAsync();
         }
     }
 }
