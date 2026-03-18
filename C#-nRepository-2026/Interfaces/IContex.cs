@@ -16,3 +16,9 @@ namespace c__nRepository_2026.Interfaces
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     }
 }
+/*
+ * מטרת הקובץ (Interface - IContext):
+ * הגדרת חוזה (Contract) המייצג את מסד הנתונים. 
+ * המטרה היא ששכבת ה-Repository תעבוד מול הממשק הזה ולא מול ה-DbContext האמיתי ישירות.
+ * זה מאפשר "הזרקת תלויות" (DI - סעיף 4) ומקל מאוד על כתיבת בדיקות יחידה (Unit Tests) אם נצטרך בעתיד.
+ */
